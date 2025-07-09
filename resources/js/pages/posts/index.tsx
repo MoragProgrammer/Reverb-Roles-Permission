@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
@@ -31,7 +30,7 @@ export default function Dashboard() {
                         </div>
 
                     <Button>
-                        <Link href="/post/create" prefetch>
+                        <Link href="/posts/create" prefetch>
                             Create Post
                         </Link>
                     </Button>

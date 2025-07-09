@@ -22,7 +22,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+          return Inertia::render('posts/create');
     }
 
     /**
