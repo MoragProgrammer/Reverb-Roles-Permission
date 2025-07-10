@@ -1,21 +1,89 @@
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head} from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react'; 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Posts',
-        href: '/posts',
+        title: 'Create Posts',
+        href: '/create/posts',
     },
 ];
 
 export default function Dashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Posts" />
+            <Head title="Create Posts" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
                 <div className="rounded border p-6 shadow-xl">
-                    Create Post
+
+                        <div className="mb-5 flex item-center justify-between">
+                        <div className="text-xl text-slate-600">
+                           Create Post
+                        </div>
+
+                    <Button>
+                        <Link href="/posts" prefetch>
+                            Go Back
+                        </Link>
+                    </Button>
+
+                    </div>
+
+                    <Card>
+                        <CardContent>
+                            <form>
+                                <div className="grid grid-cols-2 gap-4">
+
+                                    <div className='col-span-2'>
+                                        <Label htmlFor="title">Title</Label>
+                                        <Input type='text' id='title' placeholder='Title'/>
+                                    </div>
+
+                                      <div className='col-span-2 md:col-span-1'>
+                                        <Label htmlFor="category">Category</Label>
+                                        <Select>
+                                            <SelectTrigger id="category">
+                                                <SelectValue placeholder="Select Category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Marvel">Marvel</SelectItem>
+                                                <SelectItem value="DC">DC</SelectItem>
+                                            </SelectContent>
+                                            </Select>
+                                    </div>
+
+                                       <div className='col-span-2 md:col-span-1'>
+                                        <Label htmlFor="status">Status</Label>
+                                        <Select>
+                                            <SelectTrigger id="status">
+                                                <SelectValue placeholder="Select Status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="1">Active</SelectItem>
+                                                <SelectItem value="0">Inactive</SelectItem>
+                                            </SelectContent>
+                                            </Select>
+                                    </div>
+
+
+                                    <div className="mt-4">
+                                        <Label htmlFor='content'>Content</Label>
+                                        <Input type='text' id='content' placeholder='Content' />
+                                    </div>
+
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+
                 </div>
             </div>
         </AppLayout>
