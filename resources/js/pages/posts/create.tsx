@@ -18,6 +18,23 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Dashboard() {
+
+   export default function Dashboard() {
+    const { data, setData, post, errors, processing } = useForm<{
+        title: string;
+        category: string;
+        status: string;
+        content: string;
+        image: File | null;
+    }>({
+        title: '',
+        category: '',
+        status: '',
+        content: '',
+        image: null,
+    });
+
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Posts" />
@@ -40,7 +57,7 @@ export default function Dashboard() {
                     <Card>
                         <CardContent>
                             <form>
-                                <div className="grid grid-cols-2 gap-4">
+
 
                                     <div className='col-span-2'>
                                         <Label htmlFor="title">Title</Label>
@@ -76,10 +93,21 @@ export default function Dashboard() {
 
                                     <div className="mt-4">
                                         <Label htmlFor='content'>Content</Label>
-                                        <Input type='text' id='content' placeholder='Content' />
+                                        <Textarea rows={6} id='content' placeholder='Type Content Here ...' />
                                     </div>
 
+
+                                         <div className="mt-4">
+                                        <Label htmlFor='image'>Select Image</Label>
+                                        <Input type="file" id='image'/>
+                                    </div>
+
+                                <div className="mt-4 text-end">
+                                    <Button type="submit">
+                                        Create Post
+                                    </Button>
                                 </div>
+
                             </form>
                         </CardContent>
                     </Card>
