@@ -61,12 +61,12 @@ export default function Dashboard() {
 
                                     <div className='col-span-2'>
                                         <Label htmlFor="title">Title</Label>
-                                        <Input type='text' id='title' placeholder='Title'/>
+                                        <Input type='text' id='title' placeholder='Title' value={data.title} onChange={e => setData('title', e.target.value)} />
                                     </div>
 
                                       <div className='col-span-2 md:col-span-1'>
                                         <Label htmlFor="category">Category</Label>
-                                        <Select>
+                                        <Select value={data.category} onValueChange={e => setData('category', e)}>
                                             <SelectTrigger id="category">
                                                 <SelectValue placeholder="Select Category" />
                                             </SelectTrigger>
@@ -79,7 +79,7 @@ export default function Dashboard() {
 
                                        <div className='col-span-2 md:col-span-1'>
                                         <Label htmlFor="status">Status</Label>
-                                        <Select>
+                                        <Select value={data.status} onValueChange={(e) => setData('status', e)}>
                                             <SelectTrigger id="status">
                                                 <SelectValue placeholder="Select Status" />
                                             </SelectTrigger>
@@ -93,18 +93,25 @@ export default function Dashboard() {
 
                                     <div className="mt-4">
                                         <Label htmlFor='content'>Content</Label>
-                                        <Textarea rows={6} id='content' placeholder='Type Content Here ...' />
+                                        <Textarea rows={6} id='content' placeholder='Type Content Here ...'
+                                        value={data.content} onChange={e => setData('content', e.target.value)} />
                                     </div>
 
 
                                          <div className="mt-4">
                                         <Label htmlFor='image'>Select Image</Label>
-                                        <Input type="file" id='image'/>
+                                        <Input type="file" id='image' onChange={e => {
+                                            const file = e.target.files?.[0];
+                                            if (file){
+                                                setData('image', file);
+                                            }
+                                        }} />
                                     </div>
 
                                 <div className="mt-4 text-end">
-                                    <Button type="submit">
-                                        Create Post
+                                    <Button size={'lg'} type="submit" disabled={processing}>
+                                        {processing && <Loader2 className='animate-spin'/> }
+                                        <span>Create Post</span>
                                     </Button>
                                 </div>
 
