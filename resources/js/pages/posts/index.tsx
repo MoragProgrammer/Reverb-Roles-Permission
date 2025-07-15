@@ -1,11 +1,16 @@
+import InertiaPagination from '@/components/inertia-pagination';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import debounce from 'lodash/debounce';
 import { Search } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,6 +20,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Dashboard() {
+
+    const { flash } = usePage<{ flash: { message?: string } }>().props;
+
+      useEffect(() => {
+        if (flash.message){
+            console.log(flash.message);
+        }
+        },[flash.message]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Posts" />
