@@ -42,21 +42,47 @@ interface PostsType {
     total: number;
 }
 
+//add this for connecting broadcasting---------------
 declare global {
     interface Window {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Echo: any;
     }
 }
+//----------------------------------------------------
 
 export default function Dashboard({ posts }: { posts: PostsType }) {
     const { flash } = usePage<{ flash: { message?: string } }>().props;
 
 
+//added code for broad casting----search this------ also update the "posts.data?.map((post, index)" to --> "allPosts?.map((post, index)"
+    const [allPosts, setAllPosts] = useState<PostType[]>(posts.data);
+//---------------------------------------
+
     useEffect(() => {
         if (flash.message){
             toast.success(flash.message);
         }
+
+//add broadcast connection-----> test code --> "console.log(post);" ------------------
+const channel = window.Echo.channel('posts').listen ('PostUpdated', ({post} : {post: PostType}) => {
+
+//paste testing code here====
+
+//===========================
+
+//---add this code to update table----------------------------------------------
+setAllPosts((prev) => prev.map((p) => (p.id === post.id ? post : p)));
+});
+
+
+ if (flash.message) toast.success(flash.message);
+
+        return () => {
+            channel.stopListening('PostUpdated');
+            window.Echo.leave('posts');
+        };
+//-------------------------------------------------------------------------------
     }, [flash.message]);
 
     // Search functionality
@@ -115,7 +141,8 @@ export default function Dashboard({ posts }: { posts: PostsType }) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {posts.data?.map((post, index) => (
+
+                                    {allPosts?.map((post, index) => (
                                         <TableRow key={post.id}>
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell>
