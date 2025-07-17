@@ -8,6 +8,8 @@
 
 
 # Edited_files :
+> PostController.php
+> app.tsx (js files)
 > -> Post (Pages folder)
 > 1. index.tsx
 
