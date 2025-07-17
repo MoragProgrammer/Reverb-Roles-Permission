@@ -1,15 +1,19 @@
 # The files we added and edited were:
 
 # Added_files :
+> php artisan make:event PostUpdated (app --> Events --> PostUpdated.php)
+> echo.js (if missing)
 
 
+
+
+# Edited_files :
 > -> Post (Pages folder)
 > 1. index.tsx
 
 
-# Edited_files :
-
-
 # Installing
 > php artisan install:broadcasting
+> 1. reverb --> yes ---> yes
 
+>
