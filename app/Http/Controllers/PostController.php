@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 //Broadcasting import----------------------------
 use App\Events\PostUpdated;
+use App\Events\PostCreated;
+use App\Events\PostDeleted;
 //-----------------------------------------------
 
 use App\Models\Post;
@@ -51,7 +53,7 @@ class PostController extends Controller {
         $file = $request->file('image');
         $filePath = $file->store('posts', 'public');
 
-        Post::create([
+        $post = Post::create([
             'user_id' => auth()->user()->id,
             'title' => $request->title,
             'slug' => Str::slug($request->title),
@@ -60,6 +62,8 @@ class PostController extends Controller {
             'category' => $request->category,
             'image' => $filePath
         ]);
+
+        broadcast(new PostCreated($post));
 
         return to_route('posts.index')->with('message', 'Post created successfully.');
     }
@@ -123,7 +127,8 @@ class PostController extends Controller {
             Storage::disk('public')->delete($post->image);
         }
         $post->delete();
+        broadcast(new PostDeleted($post));
 
-        // return to_route('posts.index')->with('message', 'Post deleted successfully.');
+        return to_route('posts.index')->with('message', 'Post deleted successfully.');
     }
 }

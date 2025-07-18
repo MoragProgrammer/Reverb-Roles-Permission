@@ -65,14 +65,18 @@ export default function Dashboard({ posts }: { posts: PostsType }) {
         }
 
 //add broadcast connection-----> test code --> "console.log(post);" ------------------
-const channel = window.Echo.channel('posts').listen ('PostUpdated', ({post} : {post: PostType}) => {
+const channel = window.Echo.channel('posts').listen('PostUpdated', (data: { post: PostType }) => {
+    setAllPosts((prev) => prev.map((p) => (p.id === data.post.id ? data.post : p)));
+});
 
-//paste testing code here====
+// Listen for post creation
+window.Echo.channel('posts').listen('PostCreated', (data: { post: PostType }) => {
+    setAllPosts((prev) => [...prev, data.post]);
+});
 
-//===========================
-
-//---add this code to update table----------------------------------------------
-setAllPosts((prev) => prev.map((p) => (p.id === post.id ? post : p)));
+// Listen for post deletion
+window.Echo.channel('posts').listen('PostDeleted', (data: { postId: number }) => {
+    setAllPosts((prev) => prev.filter(p => p.id !== data.postId));
 });
 
 
