@@ -18,4 +18,14 @@
 > php artisan install:broadcasting
 > 1. reverb --> yes ---> yes
 
->
+
+-------------------------------------
+Update features:
+
+Added:
+PostCreated.php (Events)
+PostDeleted.php (Events)
+
+Edited:
+PostController.php
+index.tsx
