@@ -15,7 +15,7 @@ Users (pages):
 
 - php artisan make:seeder PermissionSeeder
 - php artisan db:seed PermissionSeeder
-- 
+
 ----------------------------------------
 //Roles and permissions
 - php artisan make:controller RoleController --resource (RoleController)
