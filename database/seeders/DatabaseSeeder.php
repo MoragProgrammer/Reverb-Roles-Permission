@@ -3,8 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
+// Import our seeders
+use Database\Seeders\PermissionSeeder;
+use Database\Seeders\UserSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Run permission seeder first to create all permissions
+        $this->call(PermissionSeeder::class);
+        
+        // Run user seeder to create admin and regular user
+        $this->call(UserSeeder::class);
     }
 }
