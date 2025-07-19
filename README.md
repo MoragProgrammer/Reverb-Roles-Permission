@@ -14,11 +14,17 @@ Users (pages):
 ----------------------------------------
 
 - php artisan make:seeder PermissionSeeder
-
+- php artisan db:seed PermissionSeeder
+- 
 ----------------------------------------
 //Roles and permissions
+- php artisan make:controller RoleController --resource (RoleController)
 
-
+Roles (pages):
+1. Index.tsx
+2. Create.tsx
+3. Edit.tsx
+4. Show.tsx
 
 
 Edited:
