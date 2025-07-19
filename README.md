@@ -4,7 +4,7 @@
 Added:
 
 // Users
-php artisan make:controller UserController --resource (UserController)
+- php artisan make:controller UserController --resource (UserController)
 
 Users (pages):
 1. Index.tsx
@@ -13,7 +13,7 @@ Users (pages):
 4. Show.tsx
 ----------------------------------------
 
-php artisan make:seeder PermissionSeeder
+- php artisan make:seeder PermissionSeeder
 
 ----------------------------------------
 //Roles and permissions
@@ -22,13 +22,13 @@ php artisan make:seeder PermissionSeeder
 
 
 Edited:
-web.php
-app-sidebar.tsx (components)
+- web.php
+- app-sidebar.tsx (components)
 
 
 
 
 Intalls:
-composer require spatie/laravel-permission
-php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
-php artisan migrate
+- composer require spatie/laravel-permission
+- php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+- php artisan migrate
