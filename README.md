@@ -69,9 +69,9 @@ Edit:
 [ Applying real time Users ]
 
 Add:
-- UserCreated.php
-- UserDeleted.php
-- UserUpdated.php
+- UserCreated.php (app/Events)
+- UserDeleted.php (app/Events)
+- UserUpdated.php (app/Events)
 
 Edit:
 - UserController.php
@@ -81,9 +81,9 @@ Edit:
 [ Applying real time Roles ]
 
 Add:
-- RoleCreated.php
-- RoleDeleted.php
-- RoleUpdated.php
+- RoleCreated.php (app/Events)
+- RoleDeleted.php (app/Events)
+- RoleUpdated.php (app/Events)
 
 
 Edit:
