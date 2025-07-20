@@ -9,15 +9,21 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Create( { permissions } ) {
+interface FormDataType {
+    name: string;
+    permissions: string[];
+    [key: string]: any;
+}
 
-    const {data, setData, errors, post} = useForm ({
+export default function Create( { permissions }: { permissions: string[] } ) {
+
+    const {data, setData, errors, post} = useForm<FormDataType> ({
         name: "",
         permissions: []
     });
 
 
-function handleCheckboxChange(permissionName, checked){
+function handleCheckboxChange(permissionName: string, checked: boolean){
     if (checked){
         setData("permissions", [...data.permissions, permissionName])
     }else{
@@ -26,7 +32,7 @@ function handleCheckboxChange(permissionName, checked){
 }
 
 
-    function submit(e) {
+    function submit(e: React.FormEvent) {
         e.preventDefault();
         post(route('roles.store'));
     }
@@ -46,7 +52,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
          <div className="grid gap-2">
-              <label for="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Name:
               </label>
               <input
@@ -63,7 +69,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
         <div className="grid gap-2">
-              <label for="permissions" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="permissions" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Permissions:
               </label>
 

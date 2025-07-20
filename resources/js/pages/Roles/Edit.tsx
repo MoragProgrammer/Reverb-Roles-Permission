@@ -9,15 +9,26 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Edit( { role, rolePermissions, permissions } ) {
+interface RoleType {
+    id: number;
+    name: string;
+}
 
-    const {data, setData, errors, put} = useForm ({
+interface FormDataType {
+    name: string;
+    permissions: string[];
+    [key: string]: any;
+}
+
+export default function Edit( { role, rolePermissions, permissions }: { role: RoleType, rolePermissions: string[], permissions: string[] } ) {
+
+    const {data, setData, errors, put} = useForm<FormDataType> ({
         name: role.name || "",
         permissions: rolePermissions || [],
     });
 
 
-function handleCheckboxChange(permissionName, checked){
+function handleCheckboxChange(permissionName: string, checked: boolean){
     if (checked){
         setData("permissions", [...data.permissions, permissionName])
     }else{
@@ -26,7 +37,7 @@ function handleCheckboxChange(permissionName, checked){
 }
 
 
-    function submit(e) {
+    function submit(e: React.FormEvent) {
         e.preventDefault();
         put(route('roles.update', role.id));
     }
@@ -46,7 +57,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
          <div className="grid gap-2">
-              <label for="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Name:
               </label>
               <input
@@ -64,7 +75,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
         <div className="grid gap-2">
-              <label for="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="permissions" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Permissions:
               </label>
 

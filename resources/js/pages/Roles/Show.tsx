@@ -9,13 +9,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Edit( { role, permissions } ) {
+interface RoleType {
+    id: number;
+    name: string;
+}
+
+export default function Show( { role, permissions }: { role: RoleType, permissions: string[] } ) {
 
 
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Role Edit" />
+            <Head title="Role Show" />
 
 
                 <div className='p-3'>
@@ -29,7 +34,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
                                 <p><strong>Permissions:</strong></p>
                                    {permissions.map((permission) =>
                         <span
-                            key="1"
+                            key={permission}
                             className="mr-1 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
                         >
                             {permission}

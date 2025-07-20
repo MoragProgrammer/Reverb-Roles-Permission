@@ -9,7 +9,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Edit({ user }) {
+interface UserType {
+    name: string;
+    email: string;
+}
+
+export default function Show({ user }: { user: UserType }) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

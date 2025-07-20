@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Inertia\Inertia;
+use App\Events\UserCreated;
+use App\Events\UserUpdated;
+use App\Events\UserDeleted;
 
 class UserController extends Controller
 {
@@ -49,6 +52,8 @@ class UserController extends Controller
         );
 
         $user->syncRoles($request->roles);
+
+        UserCreated::dispatch($user->load('roles'));
 
         return to_route("users.index");
     }
@@ -101,6 +106,8 @@ class UserController extends Controller
 
      $user->syncRoles($request->roles);
 
+        UserUpdated::dispatch($user->load('roles'));
+
         return to_route("users.index");
     }
 
@@ -109,8 +116,12 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        User::destroy($id);
+        $user = User::findOrFail($id);
 
-return to_route("users.index");
+        UserDeleted::dispatch($user);
+
+        $user->delete();
+
+        return to_route("users.index");
     }
 }

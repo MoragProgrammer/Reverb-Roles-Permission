@@ -9,9 +9,23 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Edit({ user, userRoles, roles }) {
+interface UserType {
+    id: number;
+    name: string;
+    email: string;
+}
 
-    const {data, setData, errors, put} = useForm ({
+interface FormDataType {
+    name: string;
+    email: string;
+    password: string;
+    roles: string[];
+    [key: string]: any;
+}
+
+export default function Edit({ user, userRoles, roles }: { user: UserType, userRoles: string[], roles: string[] }) {
+
+    const {data, setData, errors, put} = useForm<FormDataType> ({
         name: user.name || "",
         email: user.email || "",
         password: "",
@@ -19,7 +33,7 @@ export default function Edit({ user, userRoles, roles }) {
     });
 
 
-function handleCheckboxChange(roleName, checked){
+function handleCheckboxChange(roleName: string, checked: boolean){
     if (checked){
         setData("roles", [...data.roles, roleName])
     }else{
@@ -29,7 +43,7 @@ function handleCheckboxChange(roleName, checked){
 
 
 
-    function submit(e) {
+    function submit(e: React.FormEvent) {
         e.preventDefault();
         put(route('users.update', user.id));
     }
@@ -49,7 +63,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
          <div className="grid gap-2">
-              <label for="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Name:
               </label>
               <input
@@ -65,7 +79,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
          <div className="grid gap-2">
-              <label for="email" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="email" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Email:
               </label>
               <input
@@ -82,7 +96,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
   <div className="grid gap-2">
-              <label for="password" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="password" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Password:
               </label>
               <input
@@ -99,7 +113,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
          <div className="grid gap-2">
-              <label for="roles" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="roles" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Roles:
               </label>
 

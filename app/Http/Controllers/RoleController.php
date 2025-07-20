@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Events\RoleCreated;
+use App\Events\RoleUpdated;
+use App\Events\RoleDeleted;
 
 class RoleController extends Controller
 {
@@ -42,6 +45,8 @@ class RoleController extends Controller
         $role = Role::create(["name" => $request->name]);
 
         $role->syncPermissions($request->permissions);
+
+        RoleCreated::dispatch($role->load('permissions'));
 
         return to_route("roles.index");
     }
@@ -88,6 +93,8 @@ class RoleController extends Controller
 
         $role->syncPermissions($request->permissions);
 
+        RoleUpdated::dispatch($role->load('permissions'));
+
         return to_route("roles.index");
     }
 
@@ -96,7 +103,11 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        Role::destroy($id);
+        $role = Role::findOrFail($id);
+
+        RoleDeleted::dispatch($role);
+
+        $role->delete();
 
         return to_route("roles.index");
     }

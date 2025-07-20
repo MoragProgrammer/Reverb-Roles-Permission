@@ -9,9 +9,17 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Create({ roles }) {
+interface FormDataType {
+    name: string;
+    email: string;
+    password: string;
+    roles: string[];
+    [key: string]: any;
+}
 
-    const {data, setData, errors, post} = useForm ({
+export default function Create({ roles }: { roles: string[] }) {
+
+    const {data, setData, errors, post} = useForm<FormDataType> ({
         name: "",
         email: "",
         password: "",
@@ -20,7 +28,7 @@ export default function Create({ roles }) {
 
 
 
-function handleCheckboxChange(roleName, checked){
+function handleCheckboxChange(roleName: string, checked: boolean){
     if (checked){
         setData("roles", [...data.roles, roleName])
     }else{
@@ -30,7 +38,7 @@ function handleCheckboxChange(roleName, checked){
 
 
 
-    function submit(e) {
+    function submit(e: React.FormEvent) {
         e.preventDefault();
         post(route('users.store'));
     }
@@ -50,7 +58,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
          <div className="grid gap-2">
-              <label for="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Name:
               </label>
               <input
@@ -66,7 +74,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
          <div className="grid gap-2">
-              <label for="email" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="email" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Email:
               </label>
               <input
@@ -83,7 +91,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
 
   <div className="grid gap-2">
-              <label for="password" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="password" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Password:
               </label>
               <input
@@ -99,7 +107,7 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
           </div>
 
                 <div className="grid gap-2">
-              <label for="roles" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+              <label htmlFor="roles" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Roles:
               </label>
 
