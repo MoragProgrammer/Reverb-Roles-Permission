@@ -31,8 +31,11 @@ class UserSeeder extends Seeder
 
         // Create admin user
         $admin = User::create([
-            'name' => 'Admin User',
+            'first_name' => 'Admin',
+            'last_name' => 'User',
+            'school_id' => 'admin001',
             'email' => 'admin@example.com',
+            'gender' => 'Male',
             'password' => Hash::make('password123'),
         ]);
 
@@ -50,8 +53,11 @@ class UserSeeder extends Seeder
 
         // Create regular user
         $user = User::create([
-            'name' => 'Regular User',
+            'first_name' => 'Regular',
+            'last_name' => 'User',
+            'school_id' => 'user001',
             'email' => 'user@example.com',
+            'gender' => 'Female',
             'password' => Hash::make('password123'),
         ]);
 

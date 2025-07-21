@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -20,7 +21,7 @@ class UserController extends Controller
     public function index()
     {
         return Inertia::render("Users/Index", [
-            "users" => User::with("roles")->get()
+            "users" => User::with("roles")->get(),
         ]);
     }
 
@@ -40,16 +41,27 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "name" => "required",
-            "email" => "required",
-            "password" => "required",
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'school_id' => 'required|string|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'gender' => 'required|in:Male,Female',
+            'status' => 'required|in:active,inactive',
+            'roles' => 'required|array',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $user = User::create(
-            $request->only(["name","email"])
-            +
-            ["password" => Hash::make($request->password)]
-        );
+        $data = $request->except('password', 'profile_picture');
+        $data['password'] = Hash::make($request->password);
+
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $data['profile_picture'] = $path;
+        }
+
+        $user = User::create($data);
 
         $user->syncRoles($request->roles);
 
@@ -64,7 +76,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         return Inertia::render("Users/Show", [
-            "user" => User::find($id)
+            "user" => User::with('roles')->findOrFail($id)
         ]);
     }
 
@@ -87,24 +99,38 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-             $request->validate([
-            "name" => "required",
-            "email" => "required",
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'school_id' => 'required|string|max:255|unique:users,school_id,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8',
+            'gender' => 'required|in:Male,Female',
+            'status' => 'required|in:active,inactive',
+            'roles' => 'required|array',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $user = User::find($id);
+        $data = $request->except('password', 'profile_picture');
 
-        $user->name = $request -> name;
-        $user->email = $request -> email;
-
-        if ($request->password){
-            $user->password = Hash::make($request->password);
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
         }
 
-        $user->save();
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $data['profile_picture'] = $path;
+        }
 
+        $user->update($data);
 
-     $user->syncRoles($request->roles);
+        $user->syncRoles($request->roles);
 
         UserUpdated::dispatch($user->load('roles'));
 
