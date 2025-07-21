@@ -51,3 +51,58 @@ Intalls:
 - composer require spatie/laravel-permission
 - php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 - php artisan migrate
+
+
+=========================================
+DAY 2 :
+=========================================
+[Seeder Account User and Admin]
+Add:
+- UserSeeder.php  (database/seeders/UserSeeder.php ) 
+- php artisan db:seed 
+
+
+Edit:
+- DatabaseSeeder.php  (database/seeders/DatabaseSeeder.php )
+
+--------------------------------------------------------------------
+[ Applying real time Users ]
+
+Add:
+- UserCreated.php (app/Events)
+- UserDeleted.php (app/Events)
+- UserUpdated.php (app/Events)
+
+Edit:
+- UserController.php
+- Index.tsx (resources/js/pages/Users/Index.tsx)
+
+--------------------------------------------------------------------
+[ Applying real time Roles ]
+
+Add:
+- RoleCreated.php (app/Events)
+- RoleDeleted.php (app/Events)
+- RoleUpdated.php (app/Events)
+
+
+Edit:
+- RoleController.php
+- Index (resources/js/pages/Roles/Index.tsx) 
+
+-----------------------------------------------------------------------------
+[Minor Fixes]
+
+Roles (resources/js/pages/Roles) ::
+1. Index.tsx
+2. Create.tsx
+3. Edit.tsx
+
+Users (resources/js/pages/Users) ::
+1. Index.tsx
+2. Create.tsx
+3. Edit.tsx
+
+----------------------------------------------------------------------------------
+
+
