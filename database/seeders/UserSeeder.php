@@ -15,8 +15,11 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Create admin role if it doesn't exist
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        
+        $adminRole = Role::firstOrCreate([
+            'name' => 'admin',
+            'badge_color' => '#EF4444' // Red color for admin
+        ]);
+
         // Give admin all permissions
         $adminRole->givePermissionTo([
             'users.view',
@@ -43,8 +46,11 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         // Create regular user role if it doesn't exist
-        $userRole = Role::firstOrCreate(['name' => 'user']);
-        
+        $userRole = Role::firstOrCreate([
+            'name' => 'user',
+            'badge_color' => '#3B82F6' // Blue color for regular users
+        ]);
+
         // Give user basic permissions
         $userRole->givePermissionTo([
             'users.view',

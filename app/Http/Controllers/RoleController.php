@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Events\RoleCreated;
 use App\Events\RoleUpdated;
@@ -29,7 +29,7 @@ class RoleController extends Controller
     {
         return Inertia::render("Roles/Create",[
             "permissions" => Permission::pluck("name")
-    ]);
+        ]);
     }
 
     /**
@@ -38,11 +38,15 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "name" => "required",
-            "permissions" => "required"
+            "name" => "required|unique:roles,name",
+            "badge_color" => "required|regex:/^#[A-Fa-f0-9]{6}$/",
+            "permissions" => "required|array"
         ]);
 
-        $role = Role::create(["name" => $request->name]);
+        $role = Role::create([
+            "name" => $request->name,
+            "badge_color" => $request->badge_color
+        ]);
 
         $role->syncPermissions($request->permissions);
 
@@ -71,8 +75,8 @@ class RoleController extends Controller
         $role = Role::find($id);
         return Inertia::render("Roles/Edit", [
             "role" => $role,
-            "rolePermissions" => $role -> permissions () -> pluck("name"),
-             "permissions" => Permission::pluck("name")
+            "rolePermissions" => $role->permissions()->pluck("name"),
+            "permissions" => Permission::pluck("name")
         ]);
     }
 
@@ -81,15 +85,18 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role = Role::findOrFail($id);
+
         $request->validate([
-            "name" => "required",
-            "permissions" => "required"
+            "name" => "required|unique:roles,name," . $role->id,
+            "badge_color" => "required|regex:/^#[A-Fa-f0-9]{6}$/",
+            "permissions" => "required|array"
         ]);
 
-        $role = Role::find($id);
-
-        $role->name = $request->name;
-        $role->save();
+        $role->update([
+            "name" => $request->name,
+            "badge_color" => $request->badge_color
+        ]);
 
         $role->syncPermissions($request->permissions);
 
