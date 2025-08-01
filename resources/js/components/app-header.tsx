@@ -4,37 +4,69 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { cn } from '@/lib/utils';
+import { can } from '@/lib/can';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { LayoutGrid, Menu, Search, NotebookPen, UsersRound, Notebook, FileText, Bell, Inbox, Settings } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
-const mainNavItems: NavItem[] = [
+interface NavItemWithPermission extends NavItem {
+    permissions?: string[];
+}
+
+const mainNavItems: NavItemWithPermission[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
     },
+    {
+        title: 'Posts',
+        href: '/posts',
+        icon: NotebookPen,
+        permissions: ['posts.view', 'posts.create', 'posts.edit', 'posts.delete'],
+    },
+    {
+        title: 'Users',
+        href: '/users',
+        icon: UsersRound,
+        permissions: ['users.view', 'users.create', 'users.edit', 'users.delete'],
+    },
+    {
+        title: 'Roles',
+        href: '/roles',
+        icon: Notebook,
+        permissions: ['roles.view', 'roles.create', 'roles.edit', 'roles.delete'],
+    },
+    {
+        title: 'Forms',
+        href: '/forms',
+        icon: FileText,
+        permissions: ['forms.view', 'forms.create', 'forms.edit', 'forms.delete', 'forms.show'],
+    },
+    {
+        title: 'Submissions',
+        href: '/submissions',
+        icon: Inbox,
+        permissions: ['submissions.view', 'submissions.review', 'submissions.re-review', 'submissions.delete'],
+    },
+    {
+        title: 'Customization',
+        href: '/customization',
+        icon: Settings,
+        permissions: ['customization.view', 'customization.edit'],
+    },
 ];
 
-const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+const rightNavItems: NavItem[] = [];
+// Repository and Documentation items removed
 
 const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
@@ -45,6 +77,7 @@ interface AppHeaderProps {
 export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
+    const { unreadCount } = useNotifications();
     const getInitials = useInitials();
     return (
         <>
@@ -60,18 +93,31 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             </SheetTrigger>
                             <SheetContent side="left" className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar">
                                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                                <SheetDescription className="sr-only">Mobile navigation menu for accessing different sections of the application</SheetDescription>
                                 <SheetHeader className="flex justify-start text-left">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
                                 </SheetHeader>
                                 <div className="flex h-full flex-1 flex-col space-y-4 p-4">
                                     <div className="flex h-full flex-col justify-between text-sm">
                                         <div className="flex flex-col space-y-4">
-                                            {mainNavItems.map((item) => (
+                                            {mainNavItems
+                                                .filter((item) => !item.permissions || item.permissions.some(permission => can(permission)))
+                                                .map((item) => (
                                                 <Link key={item.title} href={item.href} className="flex items-center space-x-2 font-medium">
                                                     {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
                                                     <span>{item.title}</span>
                                                 </Link>
                                             ))}
+                                            {/* Mobile Notifications Link */}
+                                            <Link href="/notifications" className="flex items-center space-x-2 font-medium relative">
+                                                <Bell className="h-5 w-5" />
+                                                <span>Notifications</span>
+                                                {unreadCount > 0 && (
+                                                    <span className="ml-auto h-5 w-5 rounded-full bg-red-500 text-white text-xs font-medium flex items-center justify-center min-w-[20px] shadow-lg">
+                                                        {unreadCount > 99 ? '99+' : unreadCount}
+                                                    </span>
+                                                )}
+                                            </Link>
                                         </div>
 
                                         <div className="flex flex-col space-y-4">
@@ -102,7 +148,9 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">
                         <NavigationMenu className="flex h-full items-stretch">
                             <NavigationMenuList className="flex h-full items-stretch space-x-2">
-                                {mainNavItems.map((item, index) => (
+                                {mainNavItems
+                                    .filter((item) => !item.permissions || item.permissions.some(permission => can(permission)))
+                                    .map((item, index) => (
                                     <NavigationMenuItem key={index} className="relative flex h-full items-center">
                                         <Link
                                             href={item.href}
@@ -126,9 +174,6 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 
                     <div className="ml-auto flex items-center space-x-2">
                         <div className="relative flex items-center space-x-1">
-                            <Button variant="ghost" size="icon" className="group h-9 w-9 cursor-pointer">
-                                <Search className="!size-5 opacity-80 group-hover:opacity-100" />
-                            </Button>
                             <div className="hidden lg:flex">
                                 {rightNavItems.map((item) => (
                                     <TooltipProvider key={item.title} delayDuration={0}>
@@ -152,13 +197,47 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 ))}
                             </div>
                         </div>
+                        
+                        {/* Notifications Button */}
+                        <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Link href="/notifications">
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className={cn(
+                                                "h-9 w-9 rounded-md relative",
+                                                page.url === '/notifications' && "bg-accent text-accent-foreground"
+                                            )}
+                                        >
+                                            <Bell className="h-5 w-5" />
+                                            {unreadCount > 0 && (
+                                                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs font-medium flex items-center justify-center min-w-[20px] shadow-lg">
+                                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                                </span>
+                                            )}
+                                            <span className="sr-only">Notifications</span>
+                                        </Button>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Notifications {unreadCount > 0 && `(${unreadCount} unread)`}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        
+                        {/* User full name display - hidden on mobile */}
+                        <div className="hidden md:flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {`${auth.user.first_name} ${auth.user.last_name}`}
+                        </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="size-10 rounded-full p-1">
                                     <Avatar className="size-8 overflow-hidden rounded-full">
-                                        <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
+                                        <AvatarImage src={auth.user.profile_picture ? `/storage/${auth.user.profile_picture}` : undefined} alt={`${auth.user.first_name} ${auth.user.last_name}`} />
                                         <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(auth.user.name)}
+                                            {getInitials(`${auth.user.first_name} ${auth.user.last_name}`)}
                                         </AvatarFallback>
                                     </Avatar>
                                 </Button>

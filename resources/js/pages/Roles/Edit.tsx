@@ -1,41 +1,55 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ColorPicker } from '@/components/ui/color-picker';
+import { PermissionGroups } from '@/components/permission-groups';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Role Edit',
+        title: 'Roles',
         href: '/roles',
+    },
+    {
+        title: 'Edit',
+        href: '/roles/edit',
     },
 ];
 
 interface RoleType {
     id: number;
     name: string;
+    badge_color: string;
 }
 
 interface FormDataType {
     name: string;
+    badge_color: string;
     permissions: string[];
-    [key: string]: any;
+    [key: string]: string | string[];
 }
 
-export default function Edit( { role, rolePermissions, permissions }: { role: RoleType, rolePermissions: string[], permissions: string[] } ) {
-
-    const {data, setData, errors, put} = useForm<FormDataType> ({
-        name: role.name || "",
-        permissions: rolePermissions || [],
+export default function Edit({ role, rolePermissions, permissions }: {
+    role: RoleType;
+    rolePermissions: string[];
+    permissions: string[];
+}) {
+    const { data, setData, errors, put } = useForm<FormDataType>({
+        name: role.name,
+        badge_color: role.badge_color,
+        permissions: rolePermissions,
     });
 
-
-function handleCheckboxChange(permissionName: string, checked: boolean){
-    if (checked){
-        setData("permissions", [...data.permissions, permissionName])
-    }else{
-        setData("permissions", data.permissions.filter(name => name !== permissionName));
+    function handlePermissionChange(permission: string, checked: boolean) {
+        if (checked) {
+            setData("permissions", [...data.permissions, permission]);
+        } else {
+            setData("permissions", data.permissions.filter(name => name !== permission));
+        }
     }
-}
-
 
     function submit(e: React.FormEvent) {
         e.preventDefault();
@@ -44,73 +58,68 @@ function handleCheckboxChange(permissionName: string, checked: boolean){
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Role Edit" />
+            <Head title="Edit Role" />
 
-
-                <div className='p-3'>
-<Link href={route('roles.index')}
-className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                Back
-                            </Link>
-
-      <form onSubmit={submit} className="space-y-6 mt-4 max-w-md mx-auto">
-
-
-         <div className="grid gap-2">
-              <label htmlFor="name" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
-                  Name:
-              </label>
-              <input
-                  id="name"
-                  value={data.name}
-
-                  onChange={(e) => setData('name', e.target.value)}
-                  name="name"
-                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your name"
-              />
-              { errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p> }
-          </div>
-
-
-
-        <div className="grid gap-2">
-              <label htmlFor="permissions" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
-                  Permissions:
-              </label>
-
-            {permissions.map((permission) =>
-
-              <label key={permission} className="flex items-center space-x-2">
-                  <input
-                      type="checkbox"
-                      value={permission}
-                      checked={data.permissions.includes(permission)}
-                      onChange={(e) => handleCheckboxChange(permission, e.target.checked)}
-                      id={permission}
-                      className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span className="text-gray-800 capitalize">{permission}</span>
-              </label>
-              )}
-              { errors.permissions && <p className="text-red-500 text-sm mt-1">{errors.permissions}</p> }
-          </div>
-
-
-
-
-          <button
-             type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition"
-          >
-              Submit
-          </button>
-
-      </form>
-
-
+            <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-semibold">Edit Role</h1>
+                    <Button variant="outline" asChild>
+                        <Link href={route('roles.index')}>Back to Roles</Link>
+                    </Button>
                 </div>
 
+                <form onSubmit={submit} className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Role Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="grid gap-2">
+                                <Label htmlFor="name">Name</Label>
+                                <Input
+                                    id="name"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    placeholder="Enter role name"
+                                />
+                                {errors.name && (
+                                    <p className="text-sm text-red-500">{errors.name}</p>
+                                )}
+                            </div>
+
+                            <ColorPicker
+                                id="badge_color"
+                                label="Badge Color"
+                                value={data.badge_color}
+                                onChange={(e) => setData('badge_color', e.target.value)}
+                                error={errors.badge_color}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Permissions</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <PermissionGroups
+                                permissions={permissions}
+                                selectedPermissions={data.permissions}
+                                onChange={handlePermissionChange}
+                            />
+                            {errors.permissions && (
+                                <p className="text-sm text-red-500 mt-2">{errors.permissions}</p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <div className="flex justify-end">
+                        <Button type="submit">
+                            Update Role
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </AppLayout>
     );
 }

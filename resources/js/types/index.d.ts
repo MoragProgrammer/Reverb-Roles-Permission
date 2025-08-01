@@ -3,6 +3,8 @@ import type { Config } from 'ziggy-js';
 
 export interface Auth {
     user: User;
+    permissions: string[];
+    unreadNotificationsCount: number;
 }
 
 export interface BreadcrumbItem {
@@ -22,12 +24,21 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface CustomizationSettings {
+    current_logo?: string | null;
+    current_favicon?: string | null;
+    current_title_text?: string;
+    current_login_picture?: string | null;
+    login_overlay_opacity?: string;
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
+    settings: CustomizationSettings;
     [key: string]: unknown;
 }
 

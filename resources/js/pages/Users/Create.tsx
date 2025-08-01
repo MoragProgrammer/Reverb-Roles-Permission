@@ -1,6 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,10 +22,11 @@ interface FormDataType {
     status: 'active' | 'inactive';
     password: string;
     roles: string[];
-    [key: string]: any;
+    [key: string]: string | number | boolean | string[] | File | null | undefined;
 }
 
 export default function Create({ roles }: { roles: string[] }) {
+    const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, errors, post } = useForm<FormDataType>({
         first_name: '',
@@ -179,15 +182,28 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
               <label htmlFor="password" className="text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Password:
               </label>
-              <input
-                  id="password"
-                  value={data.password}
-                  onChange={(e) => setData('password', e.target.value)}
-                  name="password"
-                  type="password"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your password"
-              />
+              <div className="relative">
+                  <input
+                      id="password"
+                      value={data.password}
+                      onChange={(e) => setData('password', e.target.value)}
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter your password"
+                  />
+                  <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 flex items-center pr-3"
+                      onClick={() => setShowPassword(!showPassword)}
+                  >
+                      {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                      ) : (
+                          <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                      )}
+                  </button>
+              </div>
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 

@@ -1,7 +1,7 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head} from '@inertiajs/react';
+import { type User } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -10,24 +10,29 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Dashboard() {
+interface Props {
+    auth: {
+        user: User;
+    };
+}
+
+export default function Dashboard({ auth }: Props) {
+    const { user } = auth;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+            <div className="space-y-8 p-6">
+                {/* Welcome Message */}
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold">
+                        Welcome, {user.first_name}!
+                    </h2>
+                    <blockquote className="mt-4 italic text-gray-600 dark:text-gray-300">
+                        "Behold, he cometh with clouds; and every eye shall see him, and they also which pierced him: and all kindreds of the earth shall wail because of him. Even so, Amen."
+                        <br />
+                        <span className="block mt-2 text-sm">— Revelation 1:7 (KJV) <br/><br/> by: Document Tracking Team</span>
+                    </blockquote>
                 </div>
             </div>
         </AppLayout>

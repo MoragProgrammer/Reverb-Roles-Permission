@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Notification;
+use App\Models\CustomizationSetting;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -45,7 +47,9 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
-                 'permissions' => fn () => $request -> user()?->getAllPermissions()->pluck("name") ?? []
+                'permissions' => fn () => $request -> user()?->getAllPermissions()->pluck("name") ?? [],
+                'unreadNotificationsCount' => fn () => $request->user() ? 
+                    Notification::forUser($request->user()->id)->unread()->count() : 0,
             ],
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
@@ -55,6 +59,26 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message' => fn () => $request->session()->get('message')
             ],
+            'settings' => function () {
+                try {
+                    return [
+                        'current_logo' => CustomizationSetting::getValue('logo'),
+                        'current_favicon' => CustomizationSetting::getValue('favicon'),
+                        'current_title_text' => CustomizationSetting::getValue('title_text', 'Laravel Starter Kit'),
+                        'current_login_picture' => CustomizationSetting::getValue('login_picture'),
+                        'login_overlay_opacity' => CustomizationSetting::getValue('login_overlay_opacity', '0.4'),
+                    ];
+                } catch (\Exception $e) {
+                    // Return defaults if database/table doesn't exist yet
+                    return [
+                        'current_logo' => null,
+                        'current_favicon' => null,
+                        'current_title_text' => 'Laravel Starter Kit',
+                        'current_login_picture' => null,
+                        'login_overlay_opacity' => '0.4',
+                    ];
+                }
+            },
         ];
     }
 }

@@ -1,14 +1,11 @@
-import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Transition } from '@headlessui/react';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { type BreadcrumbItem, type SharedData, type User } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 
-import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useInitials } from '@/hooks/use-initials';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
@@ -19,26 +16,25 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-type ProfileForm = {
+interface Role {
+    id: number;
     name: string;
-    email: string;
-};
+    badge_color?: string;
+}
 
-export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
+interface UserWithRoles extends User {
+    roles?: Role[];
+}
+
+export default function Profile() {
     const { auth } = usePage<SharedData>().props;
+    const getInitials = useInitials();
+    
+    // Cast user to include roles property
+    const user = auth.user as UserWithRoles;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm<Required<ProfileForm>>({
-        name: auth.user.name,
-        email: auth.user.email,
-    });
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-
-        patch(route('profile.update'), {
-            preserveScroll: true,
-        });
-    };
+    // Get roles as a combined string
+    const rolesText = user.roles?.map((role: Role) => role.name).join(', ') || 'No roles assigned';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -46,81 +42,60 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Profile information" description="Update your name and email address" />
+                    <HeadingSmall title="Profile information" description="View your profile details" />
 
-                    <form onSubmit={submit} className="space-y-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="name">Name</Label>
-
-                            <Input
-                                id="name"
-                                className="mt-1 block w-full"
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
-                                required
-                                autoComplete="name"
-                                placeholder="Full name"
-                            />
-
-                            <InputError className="mt-2" message={errors.name} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
-
-                            <Input
-                                id="email"
-                                type="email"
-                                className="mt-1 block w-full"
-                                value={data.email}
-                                onChange={(e) => setData('email', e.target.value)}
-                                required
-                                autoComplete="username"
-                                placeholder="Email address"
-                            />
-
-                            <InputError className="mt-2" message={errors.email} />
-                        </div>
-
-                        {mustVerifyEmail && auth.user.email_verified_at === null && (
+                    <div className="space-y-6">
+                        {/* Profile Picture */}
+                        <div className="flex items-center space-x-4">
+                            <Avatar className="h-20 w-20">
+                                <AvatarImage src={auth.user.profile_picture ? `/storage/${auth.user.profile_picture}` : undefined} />
+                                <AvatarFallback className="text-lg">
+                                    {getInitials(`${auth.user.first_name} ${auth.user.last_name}`)}
+                                </AvatarFallback>
+                            </Avatar>
                             <div>
-                                <p className="-mt-4 text-sm text-muted-foreground">
-                                    Your email address is unverified.{' '}
-                                    <Link
-                                        href={route('verification.send')}
-                                        method="post"
-                                        as="button"
-                                        className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                    >
-                                        Click here to resend the verification email.
-                                    </Link>
+                                <Label className="text-sm font-medium">Profile Picture</Label>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    {auth.user.profile_picture ? 'Profile picture set' : 'No profile picture'}
                                 </p>
-
-                                {status === 'verification-link-sent' && (
-                                    <div className="mt-2 text-sm font-medium text-green-600">
-                                        A new verification link has been sent to your email address.
-                                    </div>
-                                )}
                             </div>
-                        )}
-
-                        <div className="flex items-center gap-4">
-                            <Button disabled={processing}>Save</Button>
-
-                            <Transition
-                                show={recentlySuccessful}
-                                enter="transition ease-in-out"
-                                enterFrom="opacity-0"
-                                leave="transition ease-in-out"
-                                leaveTo="opacity-0"
-                            >
-                                <p className="text-sm text-neutral-600">Saved</p>
-                            </Transition>
                         </div>
-                    </form>
+
+                        {/* Profile Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid gap-2 md:col-span-2">
+                                <Label>Full Name</Label>
+                                <Input value={`${auth.user.first_name} ${auth.user.middle_name ? auth.user.middle_name + ' ' : ''}${auth.user.last_name}`} readOnly className="bg-muted" />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label>Email Address</Label>
+                                <Input value={auth.user.email} readOnly className="bg-muted" />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label>School ID</Label>
+                                <Input value={auth.user.school_id || 'Not provided'} readOnly className="bg-muted" />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label>Gender</Label>
+                                <Input value={auth.user.gender || 'Not provided'} readOnly className="bg-muted" />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label>Status</Label>
+                                <Input value={auth.user.status || 'Not provided'} readOnly className="bg-muted" />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label>Role</Label>
+                                <Input value={rolesText} readOnly className="bg-muted" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <DeleteUser />
             </SettingsLayout>
         </AppLayout>
     );

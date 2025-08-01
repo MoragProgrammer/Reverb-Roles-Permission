@@ -4,6 +4,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/hooks/use-initials';
+import { Eye, EyeOff } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -36,12 +37,13 @@ interface FormDataType {
     password?: string;
     roles: string[];
     _method?: 'PUT';
-    [key: string]: any;
+    [key: string]: string | number | boolean | string[] | File | null | undefined;
 }
 
 export default function Edit({ user, userRoles, roles }: { user: UserType, userRoles: string[], roles: string[] }) {
     const getInitials = useInitials();
     const [previewUrl, setPreviewUrl] = useState<string | undefined>(user.profile_picture ? `/storage/${user.profile_picture}` : undefined);
+    const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, errors, post } = useForm<FormDataType>({
         first_name: user.first_name || '',
@@ -188,14 +190,27 @@ className="cursor-pointer px-3 py-2 text-xs font-medium text-white bg-blue-700 r
 
           <div className="grid gap-2">
               <label htmlFor="password" className="text-sm leading-none font-medium select-none">Password (leave blank to keep current):</label>
-              <input
-                  id="password"
-                  value={data.password}
-                  onChange={(e) => setData('password', e.target.value)}
-                  name="password"
-                  type="password"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+              <div className="relative">
+                  <input
+                      id="password"
+                      value={data.password}
+                      onChange={(e) => setData('password', e.target.value)}
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 flex items-center pr-3"
+                      onClick={() => setShowPassword(!showPassword)}
+                  >
+                      {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                      ) : (
+                          <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                      )}
+                  </button>
+              </div>
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
